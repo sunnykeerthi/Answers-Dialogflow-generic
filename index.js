@@ -68,6 +68,7 @@ const core = provideCore({
  * */
 app.post("/webhook", (req, res) => {
   var query = req.body.queryResult.queryText;
+  console.log(query);
   const agent = new WebhookClient({ request: req, response: res });
   const intentMap = new Map();
   const options = { sendAsMessage: true, rawPayload: true };
