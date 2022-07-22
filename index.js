@@ -17,9 +17,9 @@ const buildConfig = () => {
     apiKey: process.env.API_KEY,
     experienceKey: process.env.EXP_KEY,
     locale: "en",
-    experienceVersion: process.env.EXP_VER,
+    experienceVersion: process.env.EXP_VER.toUpperCase(),
   };
-  if (process.env.EXP_VER === "sandbox") {
+  if (process.env.EXP_VER.toLowerCase() === "sandbox") {
     config.endPoints = {
       universalSearch:
         "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/query",
