@@ -180,6 +180,7 @@ app.post("/webhook", (req, res) => {
       }
       return richResult;
     } catch (err) {
+      console.log(JSON.stringify(err));
       return err;
     }
   }
