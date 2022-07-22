@@ -2,41 +2,68 @@ const express = require("express");
 const { WebhookClient } = require("dialogflow-fulfillment");
 const dfff = require("dialogflow-fulfillment");
 const app = express();
-var axios = require("axios");
 const { provideCore } = require("@yext/answers-core");
 const PORT = process.env.PORT || 3000;
 const { convert } = require("html-to-text");
-const { info } = require("actions-on-google/dist/common");
 app.use(express.json());
 var showdown = require("showdown"),
   converter = new showdown.Converter();
 app.get("/", (req, res) => {
   res.send("Server Is Working......");
 });
-const core = provideCore({
-  apiKey: process.env.API_KEY,
-  experienceKey: process.env.EXP_KEY,
-  locale: "en",
-  experienceVersion: "PRODUCTION" /* change to Stanging for Sandbox*/,
-  /* Enable the below endpoints for Sandbox*/
-  /*
-  endpoints: {
-    universalSearch:
-      "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/query",
-    verticalSearch:
-      "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/query",
-    questionSubmission:
-      "https://liveapi-sandbox.yext.com/v2/accounts/me/createQuestion",
-    status: "https://answersstatus.pagescdn.com",
-    universalAutocomplete:
-      "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/autocomplete",
-    verticalAutocomplete:
-      "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/autocomplete",
-    filterSearch:
-      "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/filtersearch",
-  },
-  */
-});
+
+const buildConfig = () => {
+  let config = {
+    apiKey: process.env.API_KEY,
+    experienceKey: process.env.EXP_KEY,
+    locale: "en",
+    experienceVersion: process.env.EXP_VER,
+  };
+  if (process.env.EXP_VER === "sandbox") {
+    config.endPoints = {
+      universalSearch:
+        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/query",
+      verticalSearch:
+        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/query",
+      questionSubmission:
+        "https://liveapi-sandbox.yext.com/v2/accounts/me/createQuestion",
+      status: "https://answersstatus.pagescdn.com",
+      universalAutocomplete:
+        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/autocomplete",
+      verticalAutocomplete:
+        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/autocomplete",
+      filterSearch:
+        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/filtersearch",
+    };
+  }
+  return config;
+};
+
+const core = provideCore(
+  // apiKey: process.env.API_KEY,
+  // experienceKey: process.env.EXP_KEY,
+  // locale: "en",
+  // experienceVersion: "PRODUCTION" /* change to Stanging for Sandbox*/,
+  // /* Enable the below endpoints for Sandbox*/
+  // /*
+  // endpoints: {
+  //   universalSearch:
+  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/query",
+  //   verticalSearch:
+  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/query",
+  //   questionSubmission:
+  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/createQuestion",
+  //   status: "https://answersstatus.pagescdn.com",
+  //   universalAutocomplete:
+  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/autocomplete",
+  //   verticalAutocomplete:
+  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/autocomplete",
+  //   filterSearch:
+  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/filtersearch",
+  // },
+  // */
+  buildConfig
+);
 /**
  * on this route dialogflow send the webhook request
  * For the dialogflow we need POST Route.
@@ -51,83 +78,86 @@ app.post("/webhook", (req, res) => {
   agent.handleRequest(intentMap);
 
   async function handleFallback(agent) {
-    if (
-      query === "I was fired due to a violation" ||
-      query === "I quit my job voluntarily"
-    ) {
-      agent.add(
-        new dfff.Payload(
-          agent.UNSPECIFIED,
-          {
-            richContent: [
-              [
-                {
-                  type: "info",
-                  subtitle:
-                    "Based on the information provided, you are likely not eligible to file for unemployment assistance. More information on eligibility criteria and other NYS programs can be found below.",
-                },
-              ],
-            ],
-          },
-          options
-        )
-      );
-    } else if (query === "Neither of the above") {
-      agent.add(
-        new dfff.Payload(
-          agent.UNSPECIFIED,
-          {
-            richContent: [
-              [
-                {
-                  type: "info",
-                  subtitle:
-                    "You have the right to file a claim for benefits. We encourage you to file a claim even if you are uncertain. File a claim even if a former employer told you that you would not be eligible or that you were not covered. The department will make an independent assessment of your eligibility.",
-                },
-              ],
-            ],
-          },
-          options
-        )
-      );
-    } else if (query === "How much unemployment benefits do I qualify for?") {
-      const res = await retData(await query);
-      agent.add(
-        new dfff.Payload(
-          agent.UNSPECIFIED,
-          {
-            richContent: [
-              [
-                {
-                  type: "info",
-                  subtitle: "You are?",
-                },
-                {
-                  options: [
-                    {
-                      text: "Over 18 years old",
-                    },
-                    {
-                      text: "Under 18 years old",
-                    },
-                  ],
-                  type: "chips",
-                },
-              ],
-            ],
-          },
-          options
-        )
-      );
-    } else if (query.includes("18 years")) {
-      const res = await retData(
-        await `How much unemployment benefits do I qualify for ${query}`
-      );
-      agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
-    } else if (query !== "Who can file for unemployment assistance?") {
-      const res = await retData(await query);
-      agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
-    }
+    // if (
+    //   query === "I was fired due to a violation" ||
+    //   query === "I quit my job voluntarily"
+    // ) {
+    //   agent.add(
+    //     new dfff.Payload(
+    //       agent.UNSPECIFIED,
+    //       {
+    //         richContent: [
+    //           [
+    //             {
+    //               type: "info",
+    //               subtitle:
+    //                 "Based on the information provided, you are likely not eligible to file for unemployment assistance. More information on eligibility criteria and other NYS programs can be found below.",
+    //             },
+    //           ],
+    //         ],
+    //       },
+    //       options
+    //     )
+    //   );
+    // } else if (query === "Neither of the above") {
+    //   agent.add(
+    //     new dfff.Payload(
+    //       agent.UNSPECIFIED,
+    //       {
+    //         richContent: [
+    //           [
+    //             {
+    //               type: "info",
+    //               subtitle:
+    //                 "You have the right to file a claim for benefits. We encourage you to file a claim even if you are uncertain. File a claim even if a former employer told you that you would not be eligible or that you were not covered. The department will make an independent assessment of your eligibility.",
+    //             },
+    //           ],
+    //         ],
+    //       },
+    //       options
+    //     )
+    //   );
+    // } else if (query === "How much unemployment benefits do I qualify for?") {
+    //   const res = await retData(await query);
+    //   agent.add(
+    //     new dfff.Payload(
+    //       agent.UNSPECIFIED,
+    //       {
+    //         richContent: [
+    //           [
+    //             {
+    //               type: "info",
+    //               subtitle: "You are?",
+    //             },
+    //             {
+    //               options: [
+    //                 {
+    //                   text: "Over 18 years old",
+    //                 },
+    //                 {
+    //                   text: "Under 18 years old",
+    //                 },
+    //               ],
+    //               type: "chips",
+    //             },
+    //           ],
+    //         ],
+    //       },
+    //       options
+    //     )
+    //   );
+    // } else if (query.includes("18 years")) {
+    //   const res = await retData(
+    //     await `How much unemployment benefits do I qualify for ${query}`
+    //   );
+    //   agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
+    // } else if (query !== "Who can file for unemployment assistance?") {
+    //   const res = await retData(await query);
+    //   agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
+    // }
+    const res = await retData(await query);
+    console.log(JSON.stringify(res));
+    agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
   }
 
   async function retData(queryString) {

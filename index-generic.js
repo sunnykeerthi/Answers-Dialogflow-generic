@@ -16,8 +16,7 @@ const core = provideCore({
   apiKey: process.env.API_KEY,
   experienceKey: process.env.EXP_KEY,
   locale: "en",
-  experienceVersion: "PRODUCTION",
-  /* Enable the below endpoints for Sandbox*/
+  experienceVersion: process.env.EXP_VER,
   endpoints: {
     universalSearch:
       "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/query",
