@@ -155,7 +155,7 @@ app.post("/webhook", (req, res) => {
     //   agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
     // }
     const res = await retData(await query);
-    console.log(JSON.stringify(res)+'+---');
+    console.log(JSON.stringify(res) + "+---");
     agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
   }
 
@@ -164,6 +164,7 @@ app.post("/webhook", (req, res) => {
       const result = await core.universalSearch({
         query: queryString,
       });
+      console.log(JSON.stringify(result));
       var richResult = {
         richContent: [[]],
       };
