@@ -66,9 +66,10 @@ const core = provideCore({
  * on this route dialogflow send the webhook request
  * For the dialogflow we need POST Route.
  * */
+
 app.post("/webhook", (req, res) => {
   var query = req.body.queryResult.queryText;
-  console.log(query);
+  console.log(JSON.stringify(core));
   const agent = new WebhookClient({ request: req, response: res });
   const intentMap = new Map();
   const options = { sendAsMessage: true, rawPayload: true };
