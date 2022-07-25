@@ -29,86 +29,8 @@ app.post("/webhook", (req, res) => {
   agent.handleRequest(intentMap);
 
   async function handleFallback(agent) {
-    // if (
-    //   query === "I was fired due to a violation" ||
-    //   query === "I quit my job voluntarily"
-    // ) {
-    //   agent.add(
-    //     new dfff.Payload(
-    //       agent.UNSPECIFIED,
-    //       {
-    //         richContent: [
-    //           [
-    //             {
-    //               type: "info",
-    //               subtitle:
-    //                 "Based on the information provided, you are likely not eligible to file for unemployment assistance. More information on eligibility criteria and other NYS programs can be found below.",
-    //             },
-    //           ],
-    //         ],
-    //       },
-    //       options
-    //     )
-    //   );
-    // } else if (query === "Neither of the above") {
-    //   agent.add(
-    //     new dfff.Payload(
-    //       agent.UNSPECIFIED,
-    //       {
-    //         richContent: [
-    //           [
-    //             {
-    //               type: "info",
-    //               subtitle:
-    //                 "You have the right to file a claim for benefits. We encourage you to file a claim even if you are uncertain. File a claim even if a former employer told you that you would not be eligible or that you were not covered. The department will make an independent assessment of your eligibility.",
-    //             },
-    //           ],
-    //         ],
-    //       },
-    //       options
-    //     )
-    //   );
-    // } else if (query === "How much unemployment benefits do I qualify for?") {
-    //   const res = await retData(await query);
-    //   agent.add(
-    //     new dfff.Payload(
-    //       agent.UNSPECIFIED,
-    //       {
-    //         richContent: [
-    //           [
-    //             {
-    //               type: "info",
-    //               subtitle: "You are?",
-    //             },
-    //             {
-    //               options: [
-    //                 {
-    //                   text: "Over 18 years old",
-    //                 },
-    //                 {
-    //                   text: "Under 18 years old",
-    //                 },
-    //               ],
-    //               type: "chips",
-    //             },
-    //           ],
-    //         ],
-    //       },
-    //       options
-    //     )
-    //   );
-    // } else if (query.includes("18 years")) {
-    //   const res = await retData(
-    //     await `How much unemployment benefits do I qualify for ${query}`
-    //   );
-    //   agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
-    // } else if (query !== "Who can file for unemployment assistance?") {
-    //   const res = await retData(await query);
-    //   agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
-    // }
     const res = await retData(await query);
-    console.log(JSON.stringify(res) + "+---");
-    agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
+     agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
   }
 
   async function retData(queryString) {
@@ -116,8 +38,7 @@ app.post("/webhook", (req, res) => {
       const result = await core.universalSearch({
         query: queryString,
       });
-      console.log(JSON.stringify(result));
-      var richResult = {
+       var richResult = {
         richContent: [[]],
       };
       var answerJson = result.verticalResults[0].results[0].rawData;
@@ -132,8 +53,7 @@ app.post("/webhook", (req, res) => {
       }
       return richResult;
     } catch (err) {
-      console.log(JSON.stringify(err));
-      return err;
+       return err;
     }
   }
 });
