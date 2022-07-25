@@ -1,5 +1,5 @@
 let config;
-if (process.env.ENV_VER.toLowerCase() === "staging") {
+if (process.env.ENV_VER === "staging" || process.env.ENV_VER === "STAGING") {
   config = provideCore({
     apiKey: process.env.API_KEY,
     experienceKey: process.env.EXP_KEY,
