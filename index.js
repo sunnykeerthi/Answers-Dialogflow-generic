@@ -3,6 +3,7 @@ const { WebhookClient } = require("dialogflow-fulfillment");
 const dfff = require("dialogflow-fulfillment");
 const app = express();
 const { provideCore } = require("@yext/answers-core");
+const config = require("./config");
 const PORT = process.env.PORT || 3000;
 const { convert } = require("html-to-text");
 app.use(express.json());
@@ -12,59 +13,8 @@ app.get("/", (req, res) => {
   res.send("Server Is Working......");
 });
 
-const buildConfig = () => {
-  console.log("emtered");
-  let config = {
-    apiKey: process.env.API_KEY,
-    experienceKey: process.env.EXP_KEY,
-    locale: "en",
-    experienceVersion: process.env.EXP_VER.toUpperCase(),
-  };
-  if (process.env.EXP_VER.toLowerCase() === "sandbox") {
-    config.endPoints = {
-      universalSearch:
-        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/query",
-      verticalSearch:
-        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/query",
-      questionSubmission:
-        "https://liveapi-sandbox.yext.com/v2/accounts/me/createQuestion",
-      status: "https://answersstatus.pagescdn.com",
-      universalAutocomplete:
-        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/autocomplete",
-      verticalAutocomplete:
-        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/autocomplete",
-      filterSearch:
-        "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/filtersearch",
-    };
-  }
-  return config;
-};
+const core = config;
 
-const core = provideCore({
-  // apiKey: process.env.API_KEY,
-  // experienceKey: process.env.EXP_KEY,
-  // locale: "en",
-  // experienceVersion: "PRODUCTION"
-  /* change to Stanging for Sandbox*/
-  // /* Enable the below endpoints for Sandbox*/
-
-  // endpoints: {
-  //   universalSearch:
-  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/query",
-  //   verticalSearch:
-  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/query",
-  //   questionSubmission:
-  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/createQuestion",
-  //   status: "https://answersstatus.pagescdn.com",
-  //   universalAutocomplete:
-  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/autocomplete",
-  //   verticalAutocomplete:
-  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/vertical/autocomplete",
-  //   filterSearch:
-  //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/filtersearch",
-  // },
-  buildConfig,
-});
 /**
  * on this route dialogflow send the webhook request
  * For the dialogflow we need POST Route.
