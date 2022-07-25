@@ -1,6 +1,6 @@
-let core;
+let config;
 if (process.env.ENV_VER.toLowerCase() === "staging") {
-  core = provideCore({
+  config = provideCore({
     apiKey: process.env.API_KEY,
     experienceKey: process.env.EXP_KEY,
     locale: "en",
@@ -22,7 +22,7 @@ if (process.env.ENV_VER.toLowerCase() === "staging") {
     },
   });
 } else {
-  core = provideCore({
+  config = provideCore({
     apiKey: process.env.API_KEY,
     experienceKey: process.env.EXP_KEY,
     locale: "en",
@@ -30,4 +30,4 @@ if (process.env.ENV_VER.toLowerCase() === "staging") {
   });
 }
 
-export default core;
+export default config;
