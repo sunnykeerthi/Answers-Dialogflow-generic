@@ -13,6 +13,7 @@ app.get("/", (req, res) => {
 });
 
 const buildConfig = () => {
+  console.log("emtered");
   let config = {
     apiKey: process.env.API_KEY,
     experienceKey: process.env.EXP_KEY,
@@ -36,8 +37,6 @@ const buildConfig = () => {
         "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/filtersearch",
     };
   }
-
-  console.log(JSON.stringify(config));
   return config;
 };
 
