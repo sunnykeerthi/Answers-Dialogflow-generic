@@ -2,7 +2,6 @@ const express = require("express");
 const { WebhookClient } = require("dialogflow-fulfillment");
 const dfff = require("dialogflow-fulfillment");
 const app = express();
-const { provideCore } = require("@yext/answers-core");
 const config = require("./config");
 const PORT = process.env.PORT || 3000;
 const { convert } = require("html-to-text");

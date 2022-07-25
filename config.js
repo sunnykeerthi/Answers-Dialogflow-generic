@@ -1,3 +1,4 @@
+const { provideCore } = require("@yext/answers-core");
 let config;
 if (process.env.ENV_VER === "staging" || process.env.ENV_VER === "STAGING") {
   config = provideCore({
