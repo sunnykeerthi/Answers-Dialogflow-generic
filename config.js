@@ -30,4 +30,4 @@ if (process.env.ENV_VER.toLowerCase() === "staging") {
   });
 }
 
-export default config;
+module.exports = config;
