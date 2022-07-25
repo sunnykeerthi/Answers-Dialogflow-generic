@@ -40,10 +40,11 @@ const buildConfig = () => {
 };
 
 const core = provideCore({
-  apiKey: process.env.API_KEY,
-  experienceKey: process.env.EXP_KEY,
-  locale: "en",
-  experienceVersion: "PRODUCTION" /* change to Stanging for Sandbox*/,
+  // apiKey: process.env.API_KEY,
+  // experienceKey: process.env.EXP_KEY,
+  // locale: "en",
+  // experienceVersion: "PRODUCTION"
+  /* change to Stanging for Sandbox*/
   // /* Enable the below endpoints for Sandbox*/
 
   // endpoints: {
@@ -61,6 +62,7 @@ const core = provideCore({
   //   filterSearch:
   //     "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/filtersearch",
   // },
+  buildConfig,
 });
 /**
  * on this route dialogflow send the webhook request
