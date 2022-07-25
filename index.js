@@ -36,6 +36,8 @@ const buildConfig = () => {
         "https://liveapi-sandbox.yext.com/v2/accounts/me/answers/filtersearch",
     };
   }
+
+  console.log(JSON.stringify(config));
   return config;
 };
 
@@ -71,7 +73,6 @@ const core = provideCore({
 
 app.post("/webhook", (req, res) => {
   var query = req.body.queryResult.queryText;
-  console.log(JSON.stringify(core));
   const agent = new WebhookClient({ request: req, response: res });
   const intentMap = new Map();
   const options = { sendAsMessage: true, rawPayload: true };
