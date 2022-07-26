@@ -6,21 +6,16 @@ const config = require("./config");
 const PORT = process.env.PORT || 3000;
 const { convert } = require("html-to-text");
 app.use(express.json());
-var showdown = require("showdown"),
+let showdown = require("showdown"),
   converter = new showdown.Converter();
 app.get("/", (req, res) => {
   res.send("Server Is Working......");
 });
-
+/**  Get config lets from config  file*/
 const core = config;
-
-/**
- * on this route dialogflow send the webhook request
- * For the dialogflow we need POST Route.
- * */
-
+/** handle default fallback*/
 app.post("/webhook", (req, res) => {
-  var query = req.body.queryResult.queryText;
+  let query = req.body.queryResult.queryText;
   const agent = new WebhookClient({ request: req, response: res });
   const intentMap = new Map();
   const options = { sendAsMessage: true, rawPayload: true };
@@ -30,7 +25,7 @@ app.post("/webhook", (req, res) => {
 
   async function handleFallback(agent) {
     const res = await retData(await query);
-     agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
+    agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
   }
 
   async function retData(queryString) {
@@ -38,34 +33,56 @@ app.post("/webhook", (req, res) => {
       const result = await core.universalSearch({
         query: queryString,
       });
-       var richResult = {
-        richContent: [[]],
+      let daFaResult = [];
+      let richResult = {
+        richContent: [daFaResult],
       };
-      var answerJson = result.verticalResults[0].results[0].rawData;
-      if (
-        result.verticalResults[0].results[0].rawData.type.toLowerCase() ==
-        "youtube_video"
-      ) {
-        answerJson = answerJson;
+      if (result.directAnswer) {
+        let ansr;
+        if (result.directAnswer.type === "FEATURED_SNIPPET") {
+          ansr = {
+            type: "info",
+            subtitle: convert(
+              converter.makeHtml(result.directAnswer.snippet.value),
+              { wordwrap: false }
+            ),
+          };
+        } else {
+          ansr = {
+            type: "info",
+            title: convert(converter.makeHtml(result.directAnswer.value), {
+              wordwrap: false,
+            }),
+          };
+        }
+        daFaResult.push(ansr);
       } else {
-        var answerJson = result.verticalResults[0].results[0].rawData;
-        richResult.richContent.push(buildResponse(answerJson));
+        let answerJson = result.verticalResults[0].results[0].rawData;
+        if (
+          result.verticalResults[0].results[0].rawData.type.toLowerCase() ==
+          "youtube_video"
+        ) {
+          answerJson = answerJson;
+        } else {
+          let answerJson = result.verticalResults[0].results[0].rawData;
+          richResult.richContent.push(buildResponse(answerJson));
+        }
       }
       return richResult;
     } catch (err) {
-       return err;
+      return err;
     }
   }
 });
 const buildResponse = (answerJson) => {
-  var subRes = [];
+  let subRes = [];
   let answerText;
   if (["atm", "location"].includes(answerJson.type)) {
     answerText = converter.makeHtml(`${answerJson.address.line1},<br>
     ${answerJson.address.city}, ${answerJson.address.region} ${answerJson.address.postalCode}<br>
     Phone# ${answerJson.mainPhone}`);
     if (answerJson.c_image || answerJson.c_image) {
-      var img = {
+      let img = {
         type: "image",
         rawUrl: answerJson.c_image
           ? answerJson.c_image.url
@@ -75,14 +92,14 @@ const buildResponse = (answerJson) => {
       subRes.push(img);
     }
     if (answerText) {
-      var ansr = {
+      let ansr = {
         type: "info",
         title: "Nearest Location",
         subtitle: convert(answerText, { wordwrap: false }),
       };
       subRes.push(ansr);
     }
-    var chips = {
+    let chips = {
       type: "chips",
       options: [
         {
@@ -92,7 +109,7 @@ const buildResponse = (answerJson) => {
         },
       ],
     };
-    var options2 = {
+    let options2 = {
       text: "Call",
       link: `tel:${answerJson.mainPhone}`,
     };
@@ -110,7 +127,7 @@ const buildResponse = (answerJson) => {
     answerText = answerText.replace(/<a[^>]*>|<\/a>/g, "");
 
     if (answerJson.c_image || answerJson.c_image) {
-      var img = {
+      let img = {
         type: "image",
         rawUrl: answerJson.c_image
           ? answerJson.c_image.url
@@ -120,14 +137,14 @@ const buildResponse = (answerJson) => {
       subRes.push(img);
     }
     if (answerText) {
-      var ansr = {
+      let ansr = {
         type: "info",
         subtitle: convert(answerText, { wordwrap: false }),
       };
       subRes.push(ansr);
     }
     if (answerJson.c_primaryCTA) {
-      var chips = {
+      let chips = {
         type: "chips",
         options: [
           {
@@ -137,14 +154,14 @@ const buildResponse = (answerJson) => {
         ],
       };
       if (answerJson.c_secondaryCTA) {
-        var options2 = {
+        let options2 = {
           text: answerJson.c_secondaryCTA.label,
           link: answerJson.c_secondaryCTA.link,
         };
         chips.options.push(options2);
       }
       if (answerJson.tertiaryCTA) {
-        var options3 = {
+        let options3 = {
           text: answerJson.tertiaryCTA.label,
           link: answerJson.tertiaryCTA.link,
         };

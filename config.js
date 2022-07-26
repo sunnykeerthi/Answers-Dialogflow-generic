@@ -1,6 +1,7 @@
 const { provideCore } = require("@yext/answers-core");
+require("dotenv").config();
 let config;
-if (process.env.ENV_VER === "staging" || process.env.ENV_VER === "STAGING") {
+if (process.env.ENV_VER.toLowerCase() === "staging") {
   config = provideCore({
     apiKey: process.env.API_KEY,
     experienceKey: process.env.EXP_KEY,
