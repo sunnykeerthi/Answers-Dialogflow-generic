@@ -126,6 +126,7 @@ app.post("/webhook", (req, res) => {
       agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
     } else if (query !== "Who can file for unemployment assistance?") {
       const res = await retData(await query);
+      console.log(JSON.stringify(res));
       agent.add(new dfff.Payload(agent.UNSPECIFIED, res, options));
     }
   }
@@ -135,10 +136,11 @@ app.post("/webhook", (req, res) => {
       const result = await core.universalSearch({
         query: queryString,
       });
-      var richResult = {
-        richContent: [[]],
-      };
 
+      let daFaResult = [];
+      let richResult = {
+        richContent: [daFaResult],
+      };
       if (result.directAnswer) {
         let ansr;
         if (result.directAnswer.type === "FEATURED_SNIPPET") {
