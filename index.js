@@ -183,6 +183,7 @@ app.post("/webhook", (req, res) => {
       //   var answerJson = result.verticalResults[0].results[0].rawData;
       //   richResult.richContent.push(buildResponse(answerJson));
       // }
+      console.log(JSON.stringify(richResult));
       return richResult;
     } catch (err) {
       return err;
