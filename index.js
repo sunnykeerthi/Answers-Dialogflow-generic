@@ -138,16 +138,49 @@ app.post("/webhook", (req, res) => {
       var richResult = {
         richContent: [[]],
       };
-      var answerJson = result.verticalResults[0].results[0].rawData;
-      if (
-        result.verticalResults[0].results[0].rawData.type.toLowerCase() ==
-        "youtube_video"
-      ) {
-        answerJson = answerJson;
+
+      if (result.directAnswer) {
+        let ansr;
+        if (result.directAnswer.type === "FEATURED_SNIPPET") {
+          ansr = {
+            type: "info",
+            subtitle: convert(
+              converter.makeHtml(result.directAnswer.snippet.value),
+              { wordwrap: false }
+            ),
+          };
+        } else {
+          ansr = {
+            type: "info",
+            title: convert(converter.makeHtml(result.directAnswer.value), {
+              wordwrap: false,
+            }),
+          };
+        }
+        daFaResult.push(ansr);
       } else {
-        var answerJson = result.verticalResults[0].results[0].rawData;
-        richResult.richContent.push(buildResponse(answerJson));
+        let answerJson = result.verticalResults[0].results[0].rawData;
+        if (
+          result.verticalResults[0].results[0].rawData.type.toLowerCase() ==
+          "youtube_video"
+        ) {
+          answerJson = answerJson;
+        } else {
+          let answerJson = result.verticalResults[0].results[0].rawData;
+          richResult.richContent.push(buildResponse(answerJson));
+        }
       }
+
+      // var answerJson = result.verticalResults[0].results[0].rawData;
+      // if (
+      //   result.verticalResults[0].results[0].rawData.type.toLowerCase() ==
+      //   "youtube_video"
+      // ) {
+      //   answerJson = answerJson;
+      // } else {
+      //   var answerJson = result.verticalResults[0].results[0].rawData;
+      //   richResult.richContent.push(buildResponse(answerJson));
+      // }
       return richResult;
     } catch (err) {
       return err;
